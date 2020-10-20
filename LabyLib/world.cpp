@@ -6,46 +6,99 @@
 
 World::World(const std::string& map, int length) : hero_({0, 0})
 {
+	int i = 0;
+	for (auto cell : map)
+	{
+		std::pair<int, int> pos = { i % length, i / length };
+		if (cell == 'P')
+		{
+			hero_.SetPosition(pos);
+			map_[pos] = 'P';
+		}
+		if (cell == 'E')
+		{
+			Enemy enemy(pos);
+			enemies_.push_back(enemy);
+			map_[pos] = 'E';
+		}
+		if (cell == '.')
+		{
+			map_[pos] = '.';
+		}
+		if (cell == '#')
+		{
+			map_[pos] = '#';
+		}
+		i++;
+	}
 	// TODO: Complete me!
 }
 
 void World::EraseDead()
 {
-	// TODO: Complete me!
+	int n = 0;
+	for (auto& enemy : enemies_)
+	{
+		if (enemy.IsDead())
+		{
+			enemies_.erase(enemies_.begin() + n);// TODO: Complete me!
+			break;
+		}
+		n++;
+	}
 }
 
 bool World::HasEnemies() const
 {
-	// TODO: Complete me!
-	return true;
+	return enemies_.size(); // TODO: Complete me!
 }
 
 std::pair<int, int> World::North(const Character& character) const
 {
+	if (GetTile({ character.GetPosition().first, character.GetPosition().second - 1}) != '.');
+	{
+		return character.GetPosition();
+	}
+	return {character.GetPosition().first, character.GetPosition().second - 1 };
 	// TODO: Complete me!
-	return { 0, 0 };
 }
 
 std::pair<int, int> World::South(const Character& character) const
 {
+	if (GetTile({ character.GetPosition().first, character.GetPosition().second +1 }) != '.');
+	{
+		return character.GetPosition();
+	}
+	return { character.GetPosition().first, character.GetPosition().second + 1 };
 	// TODO: Complete me!
-	return { 0, 0 };
 }
 
 std::pair<int, int> World::East(const Character& character) const
 {
+	if (GetTile({ character.GetPosition().first + 1, character.GetPosition().second}) != '.');
+	{
+		return character.GetPosition();
+	}
+	return { character.GetPosition().first + 1, character.GetPosition().second };
 	// TODO: Complete me!
-	return { 0, 0 };
 }
 
 std::pair<int, int> World::West(const Character& character) const
 {
+	if (GetTile({ character.GetPosition().first - 1, character.GetPosition().second}) != '.');
+	{
+		return character.GetPosition();
+	}
+	return { character.GetPosition().first - 1, character.GetPosition().second }; 
 	// TODO: Complete me!
-	return { 0, 0 };
 }
 
 void World::HeroAttack()
 {
+	for (auto& enemy : enemies_)
+	{
+		hero_.Attack(enemy);
+	}
 	// TODO: Complete me!
 }
 
@@ -105,7 +158,10 @@ void World::ShowEnemies() const
 
 void World::EnemyAttack()
 {
-	// TODO: Complete me!
+	for (auto& enemy : enemies_)
+	{
+		enemy.Attack(hero_);
+	} // TODO: Complete me!
 }
 
 std::pair<int, int> World::CheckPosition(
@@ -119,5 +175,5 @@ std::pair<int, int> World::CheckPosition(
 char World::GetTile(std::pair<int, int> xy) const
 {
 	// TODO: Complete me!
-	return '#';
+	return map_.at(xy);
 }
